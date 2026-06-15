@@ -1,7 +1,5 @@
 # You May Have OpenAPI, But Is It AI-Ready?
 
-**APIOps Cycles Conference — Helsinki 2026**
-
 👋 This repository serves as a hands-on workshop companion.
 
 This repo is for getting hands-on with real APIs and the Jentic Scoring CLI which accesses APIs for AI-readiness using the Jentic API AI-Readiness Framework (JAIRF.

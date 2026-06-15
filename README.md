@@ -4,7 +4,7 @@
 
 👋 This repository serves as a hands-on workshop companion.
 
-The first half of the session covers the theory: why a valid OpenAPI description is not the same as an AI-ready one, and how the Jentic API AI-Readiness Framework (JAIRF) measures the gap. This repo is for the second half — getting hands-on with real APIs and the Jentic Scoring CLI.
+This repo is for getting hands-on with real APIs and the Jentic Scoring CLI which accesses APIs for AI-readiness using the Jentic API AI-Readiness Framework (JAIRF.
 
 ![Jentic API AI-Readiness Scorecard via CLI](./images/Jentic-API-CLI-Scorecard-Shopify.png)
 
@@ -41,7 +41,7 @@ Download Docker Desktop from https://docs.docker.com/get-docker/ if needed. Star
 Run this once before arriving — it pulls the Docker image so there's no wait on the day:
 
 ```bash
-npx @jentic/api-scorecard-cli@alpha score \
+npx @jentic/api-scorecard-cli score \
   https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/swagger-api/petstore/1.0.27/openapi.json
 ```
 
@@ -58,7 +58,7 @@ If you want to try LLM-enhanced signals during the session, have an API key for 
 ### Option A: Global install (recommended for the workshop)
 
 ```bash
-npm install -g @jentic/api-scorecard-cli@alpha
+npm install -g @jentic/api-scorecard-cli@latest
 ```
 
 Verify:
@@ -69,10 +69,10 @@ jentic-api-scorecard --version
 
 ### Option B: Zero-install with npx
 
-Every command in this guide works with `npx @jentic/api-scorecard-cli@alpha` in place of `jentic-api-scorecard`. No install needed, but it checks for updates on each invocation.
+Every command in this guide works with `npx @jentic/api-scorecard-cli@latest` in place of `jentic-api-scorecard`. No install needed, but it checks for updates on each invocation.
 
 ```bash
-npx @jentic/api-scorecard-cli@alpha --version
+npx @jentic/api-scorecard-cli@latest --version
 ```
 
 ---
@@ -91,7 +91,7 @@ Paste a URL or drop a file. Same scoring engine, same results. Full signal break
 
 ### Register and create your key
 
-1. Go to **https://jentic.com/scorecard**
+1. Go to **https://jentic.com/scorecard?tab=api-keys**
 2. Sign in (or sign up for a free account)
 3. Click to the **Score** option in the top nav, and click **CLI & Keys**
 4. Click **Create Key**, give it a _Name_, select an _Expiration_, and _Slide to create key_
@@ -178,7 +178,40 @@ The Petstore is one of the most-referenced OpenAPI examples in existence. It sco
 
 ---
 
-### Exercise 2 — Score local files
+### Exercise 2 — Score APIs from the public library
+
+The [Jentic Public API Library (OAK)](https://github.com/jentic/jentic-public-apis) contains thousands of scored APIs. OAK URLs score without any key.
+
+**A few starting points:**
+
+```bash
+# Lufthansa Public API (B, 66.5)
+jentic-api-scorecard score \
+  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/lufthansa.com/public/1.0/openapi.json
+
+# Revolut Merchant API (B-, 60.9) — spec_validity fails, 45% of examples invalid
+jentic-api-scorecard score \
+  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/revolut.com/merchant/2024-09-01/openapi.json
+
+# Dropbox Sign API (C, 53.7) — 710 examples, 90% fail schema validation
+jentic-api-scorecard score \
+  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/dropbox.com/dropbox-sign-api/3.0.0/openapi.json
+
+# DigitalOcean API (C, 54.0) — 589 operations, strong response coverage, weak overall
+jentic-api-scorecard score \
+  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/docs.digitalocean.com/main/2.0/openapi.json
+```
+
+**Browse and pick your own:**
+
+OAK is organised as `apis/openapi/<vendor>/<api>/<version>/openapi.json`. Browse the repo and construct the raw GitHub URL for any API that interests you. Each directory also contains a `scorecard.json` if you want to preview scores before running the CLI.
+
+> ❕ Quick Tip: Use the _Quick Access Index_ to find your preferred API vendor alphabetically - see [Jentic Public APIs (OAK)](https://github.com/jentic/jentic-public-apis).
+
+---
+
+
+### Exercise 3 — Score local files
 
 This repo includes five sample OpenAPI files in the `samples/` directory, each with a different profile.
 
@@ -221,38 +254,6 @@ jentic-api-scorecard score --detail diagnostics samples/petstore.json
 ```
 
 This progression — summary → dimensions → signals → diagnostics — is how you diagnose and prioritise improvements in practice.
-
----
-
-### Exercise 3 — Score APIs from the public library
-
-The [Jentic Public API Library (OAK)](https://github.com/jentic/jentic-public-apis) contains thousands of scored APIs. OAK URLs score without any key.
-
-**A few starting points:**
-
-```bash
-# Lufthansa Public API (B, 66.5)
-jentic-api-scorecard score \
-  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/lufthansa.com/public/1.0/openapi.json
-
-# Revolut Merchant API (B-, 60.9) — spec_validity fails, 45% of examples invalid
-jentic-api-scorecard score \
-  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/revolut.com/merchant/2024-09-01/openapi.json
-
-# Dropbox Sign API (C, 53.7) — 710 examples, 90% fail schema validation
-jentic-api-scorecard score \
-  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/dropbox.com/dropbox-sign-api/3.0.0/openapi.json
-
-# DigitalOcean API (C, 54.0) — 589 operations, strong response coverage, weak overall
-jentic-api-scorecard score \
-  https://raw.githubusercontent.com/jentic/jentic-public-apis/refs/heads/main/apis/openapi/docs.digitalocean.com/main/2.0/openapi.json
-```
-
-**Browse and pick your own:**
-
-OAK is organised as `apis/openapi/<vendor>/<api>/<version>/openapi.json`. Browse the repo and construct the raw GitHub URL for any API that interests you. Each directory also contains a `scorecard.json` if you want to preview scores before running the CLI.
-
-> ❕ Quick Tip: Use the _Quick Access Index_ to find your preferred API vendor alphabetically - see [Jentic Public APIs (OAK)](https://github.com/jentic/jentic-public-apis).
 
 ---
 

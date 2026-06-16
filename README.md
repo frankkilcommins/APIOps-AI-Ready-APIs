@@ -211,6 +211,20 @@ OAK is organised as `apis/openapi/<vendor>/<api>/<version>/openapi.json`. Browse
 
 ### Exercise 3 — Score local files
 
+> Here you'll need to get a CLI/API Key from Jentic
+
+#### Register and create your key (if not already done)
+
+1. Go to **https://jentic.com/scorecard?tab=api-keys**
+2. Sign in (or sign up for a free account)
+3. Click to the **Score** option in the top nav, and click **CLI & Keys**
+4. Click **Create Key**, give it a _Name_, select an _Expiration_, and _Slide to create key_
+4. Copy your key and export it in your terminal/shell:
+
+```bash
+export JENTIC_API_KEY=your-key-here
+```
+
 This repo includes five sample OpenAPI files in the `samples/` directory, each with a different profile.
 
 🟢 ai-ready &nbsp;&nbsp; 🟡 ai-aware &nbsp;&nbsp; 🟠 foundational &nbsp;&nbsp; 🔴 not-ready
@@ -283,7 +297,34 @@ Use `--detail signals` on whatever you score — find the dimension with the mos
 
 ---
 
-### Exercise 5 — Improve a dimension by 10%+
+### Exercise 5 - Setup and use our Agent Skill for Claude Code
+
+The [Jentic API Scorecard repository](https://github.com/jentic/jentic-api-scorecard) ships a versioned [agent skill](https://github.com/jentic/jentic-api-scorecard/blob/main/skills/jentic-api-scorecard/SKILL.md) that teaches AI coding agents how to use the CLI correctly — installing it, scoring files and URLs, producing JSON/HTML, wiring it into CI, enabling LLM analysis, and interpreting exit codes. Install it through whichever path fits your agent.
+
+#### Claude Code Setup
+
+[Claude Code](https://docs.claude.com/en/docs/claude-code/overview) users install it
+as a [plugin](https://docs.claude.com/en/docs/claude-code/plugins) — this repository
+doubles as a plugin marketplace:
+
+```
+/plugin marketplace add jentic/jentic-api-scorecard
+/plugin install api-scorecard@jentic-api-scorecard
+```
+
+Once installed, the skill loads automatically when you ask Claude to score an OpenAPI document —
+no explicit invocation needed:
+
+```
+> Score ./openapi.yaml for AI-readiness
+> How AI-ready is https://petstore3.swagger.io/api/v3/openapi.json?
+```
+
+To force it into context regardless of phrasing, invoke it explicitly with
+`/api-scorecard:jentic-api-scorecard`.
+
+
+### Exercise 6 — Improve a dimension by 10%+
 
 Pick one of the sample files (the Petstore is the best starting point — small enough to edit), open it in any text editor, make targeted changes, and re-score to verify the improvement.
 

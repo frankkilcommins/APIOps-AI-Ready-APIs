@@ -1,8 +1,6 @@
-# You May Have OpenAPI, But Is It AI-Ready?
+# Getting Your OpenAPIs AI-Ready!
 
-👋 This repository serves as a hands-on workshop companion.
-
-This repo is for getting hands-on with real APIs and the Jentic Scoring CLI which accesses APIs for AI-readiness using the Jentic API AI-Readiness Framework (JAIRF.
+👋 This repository serves as a hands-on workshop companion for getting hands-on with real APIs and the Jentic Scoring CLI which accesses APIs for AI-readiness using the Jentic API AI-Readiness Framework (JAIRF).
 
 ![Jentic API AI-Readiness Scorecard via CLI](./images/Jentic-API-CLI-Scorecard-Shopify.png)
 

@@ -1,0 +1,48 @@
+name: API AI-Readiness Scorecard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  discover:
+    name: Discover API specs
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.find.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find OpenAPI specs in samples/
+        id: find
+        run: |
+          files=$(find samples/ -maxdepth 1 \( -name "*.json" -o -name "*.yaml" -o -name "*.yml" \) | sort | jq -R . | jq -sc .)
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo "Found specs: $files"
+
+  score:
+    name: Score ${{ matrix.file }}
+    needs: discover
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        file: ${{ fromJson(needs.discover.outputs.files) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jentic/jentic-api-scorecard@v1
+        with:
+          input: ${{ matrix.file }}
+          api-key: ${{ secrets.JENTIC_API_KEY }}
+          min-score: '65'
+          summary-detail: diagnostics

@@ -322,7 +322,51 @@ To force it into context regardless of phrasing, invoke it explicitly with
 `/api-scorecard:jentic-api-scorecard`.
 
 
-### Exercise 6 — Improve a dimension by 10%+
+### Exercise 6 — Gate API quality in CI with GitHub Actions
+
+This repository includes a GitHub Actions workflow that automatically scores every OpenAPI spec in the `samples/` folder and enforces a minimum AI-readiness score of **65** on every PR targeting `main`.
+
+#### What the workflow does
+
+The workflow (`.github/workflows/api-ai-readiness.yml`) runs on two triggers:
+
+- **Pull request to `main`** — scores every spec before merge so regressions are caught automatically.
+- **Manual dispatch** — run it at any time from the **Actions** tab without opening a PR.
+
+It runs in two jobs:
+
+1. **`discover`** — scans `samples/` for all `.json`/`.yaml`/`.yml` files and outputs the list as a matrix.
+2. **`score`** — fans out in parallel over every discovered file, running `jentic/jentic-api-scorecard@v1` on each one. `fail-fast: false` means every spec is scored even if one fails the gate, so you get a complete picture in a single run.
+
+For each spec, the action:
+
+- **Gates the build** — fails the job if the score is below 65.
+- **Publishes SARIF findings** to the repository's Security tab (Alerts → Code scanning).
+- **Attaches an HTML scorecard** as a downloadable artifact on the run page.
+- **Renders a Markdown summary** (at `diagnostics` depth) directly on the Actions run page.
+
+> Outputs land even on a failing build — a failing PR is exactly when you want to see the scorecard.
+
+#### Prerequisites
+
+The workflow needs a `JENTIC_API_KEY` repository secret to score local files. Add it once:
+
+1. Go to **Settings → Secrets and variables → Actions** in the repository.
+2. Click **New repository secret**, name it `JENTIC_API_KEY`, and paste your key.
+
+Get a free key (100 scorings/month) at **https://app.jentic.com/scorecard?tab=api-keys**.
+
+#### Try it
+
+1. **Manual run:** go to the **Actions** tab → _API AI-Readiness Scorecard_ → **Run workflow**.
+2. **PR trigger:** open a pull request against `main` — the scorecard jobs appear as required checks.
+3. Click any job to see the Markdown summary, download the HTML artifact, or browse the Security tab for inline findings.
+
+For full details on the action's inputs, gating options, SARIF upload behaviour, and fork PR handling, see the [Jentic API Scorecard GitHub Action documentation](https://github.com/jentic/jentic-api-scorecard#github-action).
+
+---
+
+### Exercise 7 — Improve a dimension by 10%+
 
 Pick one of the sample files (the Petstore is the best starting point — small enough to edit), open it in any text editor, make targeted changes, and re-score to verify the improvement.
 
